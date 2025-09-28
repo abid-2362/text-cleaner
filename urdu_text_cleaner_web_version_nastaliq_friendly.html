@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Urdu Text Cleaner (Nastaliq Friendly)</title>
+  <style>
+    :root{--bg:#0b1320;--fg:#e8eef7;--muted:#a9b5c6;--card:#111a2d;--accent:#6aa9ff}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:"Noto Nastaliq Urdu","Mehr Nastaliq Web","Jameel Noori Nastaleeq","Noto Naskh Arabic",serif;}
+    .wrap{max-width:1100px;margin:24px auto;padding:16px}
+    .card{background:var(--card);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.25);padding:16px;margin-bottom:16px}
+    h1{margin:0 0 12px;font-size:28px;}
+    p{margin:8px 0;color:var(--muted)}
+    textarea{width:100%;min-height:220px;padding:14px 16px;border-radius:14px;border:1px solid #22304d;background:#0d172b;color:var(--fg);resize:vertical;line-height:2.1;font-size:20px}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{cursor:pointer;border:none;border-radius:12px;padding:10px 16px;background:#193157;color:#dbe7ff;font-size:16px}
+    .btn.primary{background:var(--accent);color:#07224a}
+    .btn:active{transform:translateY(1px)}
+    .small{font-size:14px;color:var(--muted)}
+    details{background:#0d172b;border:1px solid #22304d;border-radius:12px;padding:10px 12px}
+    summary{cursor:pointer;color:#b8c8e3;font-weight:600}
+    .stats{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-size:14px;}
+    .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+    .footer{opacity:.75;font-size:13px;margin-top:6px}
+    .two{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:900px){.two{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>اردو ٹیکسٹ کلینر — نستعلیق دوست</h1>
+      <p>ٹیکسٹ پیسٹ کریں، <b>کلین</b> دبائیں، اور نیچے سے درست شدہ متن اٹھا لیں۔ اس ٹول میں عام املائی و رموزی غلطیوں کی خودکار درستی شامل ہے، مثلاً <span class="mono">ه→ہ، ي→ی، ك→ک، کہ/کھ کی تمییز، باطل ڈیشز، انگریزی . , ; → اردو ۔ ، ؛</span> وغیرہ۔</p>
+    </div>
+
+    <div class="two">
+      <div class="card">
+        <label for="input" class="small">اصل متن</label>
+        <textarea id="input" placeholder="یہاں اردو متن پیسٹ کریں…"></textarea>
+        <div class="row" style="margin-top:10px">
+          <button class="btn primary" id="cleanBtn">کلین</button>
+          <button class="btn" id="clearBtn">صاف کریں</button>
+        </div>
+        <div id="stats" class="stats small" style="margin-top:8px"></div>
+      </div>
+
+      <div class="card">
+        <label for="output" class="small">درست شدہ متن</label>
+        <textarea id="output" placeholder="یہاں صاف شدہ متن ظاہر ہوگا…"></textarea>
+        <div class="row" style="margin-top:10px">
+          <button class="btn" id="copyBtn">کاپی کریں</button>
+        </div>
+        <div class="footer">نوٹ: اگر کوئی مخصوص لفظ آپ اپنے انداز میں رکھنا چاہیں تو نیچے “اپنی مرضی کے قواعد” میں استثنا شامل کر سکتے ہیں۔</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <details>
+        <summary>کون کون سی تبدیلیاں خودکار ہیں؟ (خلاصہ)</summary>
+        <ul>
+          <li>عربی حروف کو اردو میں بدلنا: <b>ه→ہ</b>، <b>ي/ى→ی</b>، <b>ك→ک</b>، زائد <b>ـ</b> ختم۔</li>
+          <li>غیر معیاری مرکبات کی اصلاح: <b>درد ناک→دردناک</b>، <b>خوش خبری→خوشخبری</b>، <b>پر اسرار→پراسرار</b> وغیرہ۔</li>
+          <li>غلط املا: <b>راه→راہ</b>، <b>رکهتے→رکھتے</b>، <b>کهاتے→کھاتے</b>، <b>دهوکے→دھوکے</b>، <b>جهوٹی→جھوٹی</b>، <b>پيٹهیں→پیٹھیں</b>، <b>چکهو→چکھو</b>، <b>تها/تهے→تھا/تھے</b>، <b>کبهی→کبھی</b>، <b>اٹهتے→اٹھتے</b>، <b>كهڑے→کھڑے</b>، <b>حقیقتہ→حقیقتاً</b>، <b>کچهہ→کچھ</b>، <b>سونگهہ→سونگھ</b>، <b>زنده→زندہ</b>، <b>گروه→گروہ</b> وغیرہ۔</li>
+          <li>اردو کی دوچشمی ھ: عربی <b>ه</b> کے بعد آنے والے حروف میں مناسب جگہ <b>ھ</b> لگتی ہے: <b>په→پھ</b>، <b>گه→گھ</b>، <b>جه→جھ</b>، <b>ده→دھ</b>، <b>ته→تھ</b>، <b>كه→کھ</b>، <b>ڈه→ڈھ</b>، <b>چه→چھ</b> وغیرہ (لفظ “کہ” <b>محفوظ</b> رہے گا).</li>
+          <li>رموزِ اوقاف: انگریزی <b>.</b> کو اردو <b>۔</b>، <b>,</b> کو <b>،</b>، <b>;</b> کو <b>؛</b>، لمبی ڈیشوں/کئی ہائفن کو ایک <b>—</b>، <b>...</b> کو <b>…</b>۔ اعداد کے درمیان ہائفن: <b>34-35 → 34–35</b></li>
+          <li>فالتو اسپیس اور لائن بریک کی صفائی، قوسین کے اندر/باہر غیر ضروری فاصلے کی درستگی۔</li>
+          <li>خاص صورت: <b>الله→اللہ</b></li>
+          <li>(اختیاری) لغوی ترجیحات جیسے <b>رستے→راستے</b> فعال ہیں—چاہیں تو بند کر دیں (استثنا میں شامل کریں).</li>
+        </ul>
+      </details>
+    </div>
+
+    <div class="card">
+      <details>
+        <summary>اپنی مرضی کے قواعد / استثنا (اختیاری)</summary>
+        <p class="small">اگر آپ کسی لفظ کو <i>بدلنے سے بچانا</i> چاہتے ہیں، اسے نیچے لکھیں (ہر لائن پر ایک لفظ)؛ یا اپنی کسٹم تبدیلیاں <span class="mono">غلط|درست</span> شکل میں شامل کریں۔ مثال: <span class="mono">رستے|رستے</span> (یعنی کوئی تبدیلی نہ ہو) یا <span class="mono">مثال|مِثال</span>۔</p>
+        <textarea id="customRules" placeholder="مثلاً:\nرستے|رستے\nمثال|مِثال"></textarea>
+      </details>
+    </div>
+  </div>
+
+  <script>
+    // Utility: global replace with count
+    function replaceAllCount(str, pattern, repl){
+      const re = (pattern instanceof RegExp) ? pattern : new RegExp(pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+      let count = 0;
+      const out = str.replace(re, function(){ count++; return (typeof repl === 'function') ? repl.apply(this, arguments) : repl; });
+      return { text: out, count };
+    }
+
+    function applyRules(raw, custom){
+      let text = raw;
+      let applied = [];
+      const push = (label, res) => { if(res.count>0) applied.push({label, count:res.count}); text = res.text; };
+
+      // 0) Normalize NBSP and Tatweel first
+      push('NON-BREAKING SPACE → space', replaceAllCount(text, /\u00A0/g, ' '));
+      push('Tatweel ـ removed', replaceAllCount(text, /ـ+/g, ''));
+
+      // 1) Aspirated digraphs using Arabic heh (ه) → do-chashmi heh (ھ)
+      // Do this BEFORE generic ه→ہ so we can detect it
+      const aspirated = [
+        'ب','پ','ت','ٹ','ج','چ','ڈ','د','ڑ','گ','ک'
+      ];
+      aspirated.forEach(ch => {
+        const re = new RegExp(ch + 'ه', 'g');
+        push(ch+'ه→'+ch+'ھ', replaceAllCount(text, re, ch+'ھ'));
+      });
+
+      // 2) Script normalization (Arabic forms → Urdu forms)
+      push('Arabic heh ه → Urdu heh ہ', replaceAllCount(text, /ه/g, 'ہ'));
+      push('Arabic yeh ي/ى → Urdu ی', replaceAllCount(text, /[يى]/g, 'ی'));
+      push('Arabic kaf ك → Urdu ک', replaceAllCount(text, /ك/g, 'ک'));
+
+      // 3) Special religious term
+      push('الله → اللہ', replaceAllCount(text, /الله/g, 'اللہ'));
+
+      // 4) Dictionary fixes (from your sample text & common issues)
+      const dict = [
+        ['راه','راہ'], ['رکهتے','رکھتے'], ['کهاتے','کھاتے'], ['دهکائی','دہکائی'],
+        ['پيٹهیں','پیٹھیں'], ['چکهو','چکھو'], ['تها','تھا'], ['تهے','تھے'],
+        ['پهیلائے','پھیلائے'], ['هوئے','ہوئے'], ['سمجهہ','سمجھ'], ['سمجه','سمجھ'],
+        ['دهوکے','دھوکے'], ['جهوٹی','جھوٹی'], ['هاتهوں','ہاتھوں'], ['هدئے','ہدیے'],
+        ['حقیقتہ','حقیقتاً'], ['پر اسرار','پراسرار'], ['کچهہ','کچھ'], ['کبهی','کبھی'],
+        ['اٹهتے','اٹھتے'], ['كهڑے','کھڑے'], ['سونگهہ','سونگھ'], ['زنده','زندہ'],
+        ['گروه','گروہ'], ['راه','راہ'], ['رستے','راستے'], ['خوش خبری','خوشخبری'],
+        ['درد ناک','دردناک']
+      ];
+      dict.forEach(([a,b])=>{ push(a+'→'+b, replaceAllCount(text, a, b)); });
+
+      // 5) Punctuation conversions
+      // English period/comma/semicolon → Urdu
+      push('. → ۔', replaceAllCount(text, /\./g, '۔'));
+      push(', → ،', replaceAllCount(text, /,/g, '،'));
+      push('; → ؛', replaceAllCount(text, /;/g, '؛'));
+      // Ellipsis
+      push('... → …', replaceAllCount(text, /\.\.\.+/g, '…'));
+      // Multi hyphens to em dash
+      push('-- → —', replaceAllCount(text, /(\s*-\s*){2,}/g, ' — '));
+      // Number range hyphen → en dash
+      push('number-number → number–number', replaceAllCount(text, /(\d+)\s*-\s*(\d+)/g, '$1–$2'));
+
+      // 6) Spacing around punctuation (، ۔ ؛ : ) and parentheses
+      push('remove space before punctuation', replaceAllCount(text, /\s+([،۔؛:])/g, '$1'));
+      push('one space after punctuation', replaceAllCount(text, /([،۔؛:])\s*/g, '$1 '));
+      push('condense spaces', replaceAllCount(text, /[\t ]{2,}/g, ' '));
+      push('newline cleanup', replaceAllCount(text, /\n{3,}/g, '\n\n'));
+      push('trim spaces inside ( )', replaceAllCount(text, /\(\s+/g, '('));
+      push('trim spaces inside )', replaceAllCount(text, /\s+\)/g, ')'));
+
+      // 7) Custom rules
+      if(custom && custom.trim().length){
+        const lines = custom.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+        lines.forEach(line=>{
+          const parts = line.split('|');
+          if(parts.length===2){
+            const from = parts[0];
+            const to = parts[1];
+            push('custom: '+from+'→'+to, replaceAllCount(text, from, to));
+          }
+        });
+      }
+
+      // Final trim
+      text = text.trim();
+
+      return { text, applied };
+    }
+
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const stats = document.getElementById('stats');
+    const custom = document.getElementById('customRules');
+
+    document.getElementById('cleanBtn').addEventListener('click', ()=>{
+      const { text, applied } = applyRules(input.value, custom.value);
+      output.value = text;
+      const total = applied.reduce((s,a)=>s+a.count,0);
+      stats.innerHTML = `کل تبدیلیاں: <b>${total}</b> (قواعد: ${applied.filter(a=>a.count>0).length})` +
+        (applied.length? '<br>' + applied.filter(a=>a.count>0).map(a=>`• ${a.label} <span class="mono">(${a.count})</span>`).join('<br>') : '');
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', ()=>{
+      input.value = '';
+      output.value = '';
+      stats.textContent = '';
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', async ()=>{
+      try{
+        await navigator.clipboard.writeText(output.value);
+        alert('کاپی ہو گیا!');
+      }catch(e){
+        output.select();
+        document.execCommand('copy');
+        alert('کاپی ہو گیا!');
+      }
+    });
+  </script>
+</body>
+</html>
