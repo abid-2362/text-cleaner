@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>اردو Text Cleaner</title>
+  <style>
+    body {
+      font-family: 'Noto Nastaliq Urdu', serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 20px;
+      line-height: 2;
+    }
+
+    textarea,
+    pre {
+      width: 100%;
+      min-height: 200px;
+      padding: 15px;
+      font-size: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      margin-bottom: 15px;
+      direction: rtl;
+      white-space: pre-wrap;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 6px;
+      background: #0077cc;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #005fa3;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .rules {
+      font-size: 16px;
+      margin-top: 10px;
+      color: #444;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>اردو Text Cleaner</h1>
+  <textarea id="inputText" placeholder="یہاں اپنا متن پیسٹ کریں..."></textarea>
+  <button onclick="cleanText()">کلین کریں</button>
+  <h2>درست شدہ متن:</h2>
+  <pre id="outputText"></pre>
+
+  <script>
+    function cleanText() {
+      let text = document.getElementById("inputText").value;
+
+      // بنیادی حروف کی تبدیلیاں
+      text = text.replace(/ك/g, "ک");
+      text = text.replace(/ي|ى/g, "ی");
+      text = text.replace(/ه/g, "ہ");
+      text = text.replace(/الله/g, "اللہ");
+
+      // دوچشمی ھ کی درستی
+      const doChashmiMap = {
+        "به": "بھ", "په": "پھ", "ته": "تھ", "ٹھ": "ٹھ",
+        "جه": "جھ", "چه": "چھ", "دها": "دھا", "ده": "دھ", "ڈه": "ڈھ",
+        "که": "کھ", "گه": "گھ"
+      };
+      for (let k in doChashmiMap) {
+        text = text.replace(new RegExp(k, 'g'), doChashmiMap[k]);
+      }
+
+      // عام الفاظ کی درستیاں
+      const wordFixes = {
+        "راه": "راہ",
+        "رکهتے": "رکھتے",
+        "كهاتے": "کھاتے",
+        "دهکائی": "دہکائی",
+        "پيٹهیں": "پیٹھیں",
+        "چکهو": "چکھو",
+        "تهے": "تھے",
+        "تها": "تھا",
+        "پهیلائے": "پھیلائے",
+        "هوئے": "ہوئے",
+        "دهوکے": "دھوکے",
+        "جهوٹی": "جھوٹی",
+        "هاتهوں": "ہاتھوں",
+        "هدئے": "ہدئے"
+      };
+      for (let k in wordFixes) {
+        text = text.replace(new RegExp(k, 'g'), wordFixes[k]);
+      }
+
+      // مرکبات
+      text = text.replace(/درد ناک/g, "دردناک");
+      text = text.replace(/خوش خبری/g, "خوشخبری");
+      text = text.replace(/پر اسرار/g, "پراسرار");
+
+      // رموز اوقاف
+      text = text.replace(/\./g, "۔");
+      text = text.replace(/,/g, "،");
+      text = text.replace(/;/g, "؛");
+      text = text.replace(/\$/g, ""); // غلط $ نشان ختم
+      text = text.replace(/\$/g, "");
+      text = text.replace(/\$\d+/g, ""); // جیسے $1 وغیرہ
+
+      // اسپیسنگ درستگی
+      text = text.replace(/\s+([،۔؛\)])/, "$1");
+      text = text.replace(/([\(])\s+/, "$1");
+
+      document.getElementById("outputText").innerText = text.trim();
+    }
+  </script>
+</body>
+
+</html>
